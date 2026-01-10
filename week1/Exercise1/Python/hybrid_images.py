@@ -44,14 +44,11 @@ wolft_lowpass = gaussian_filter(wolft, sigmaB, mode='nearest')
 # Experiment also by trying different values for 'sigmaA' and 'sigmaB' above.
 
 # Replace the zero image below with a high-pass filtered version of 'wolft'
-##--your-code-starts-here--##
-wolft_highpass = np.zeros(wolft.shape)
-##--your-code-ends-here--##
+wolft_highpass = wolft - wolft_lowpass
  
 # Replace also the zero image below with the correct hybrid image using your filtered results
-##--your-code-starts-here--##
-hybrid_image = np.zeros(man_lowpass.shape)
-##--your-code-ends-here--##
+hybrid_image = man_lowpass + wolft_highpass
+
 
 # Try looking at the results from different distances.
 # Notice how strongly the interpretation of the hybrid image is affected
@@ -78,10 +75,10 @@ plt.title("Hybrid Image")
 # Visualize the log magnitudes of the Fourier transforms of the original images.
 # Your task is to calculate 2D fourier transform for wolf/man and their filtered results using fft2 and fftshift
 ##--your-code-starts-here--##
-F_man = np.zeros(man.shape)
-F_man_lowpass = np.zeros(man_lowpass.shape)
-F_wolft = np.zeros(wolft.shape)
-F_wolft_highpass = np.zeros(wolft_highpass.shape)
+F_man = fftshift(fft2(man))
+F_man_lowpass = fftshift(fft2(man_lowpass))
+F_wolft = fftshift(fft2(wolft))
+F_wolft_highpass = fftshift(fft2(wolft_highpass))
 ##--your-code-ends-here--##
 
 

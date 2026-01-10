@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from utils import imnoise, gaussian2, bilateral_filter
+from scipy.ndimage import convolve1d as conv1
+from scipy.ndimage import convolve as conv2
+import matplotlib.pyplot as plt
+import numpy as np
+from skimage.transform import resize as imresize
+from matplotlib.pyplot import imread
 import os
 import sys
 sys.path.append(os.getcwd())
 
-from matplotlib.pyplot import imread
-from skimage.transform import resize as imresize
-#from scipy.misc import imresize  # deprecated, may work with older versions of scipy
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.ndimage import convolve as conv2
-from scipy.ndimage import convolve1d as conv1
-from utils import imnoise, gaussian2, bilateral_filter
+# from scipy.misc import imresize  # deprecated, may work with older versions of scipy
 
 
 # Load test images and convert to double precision in the interval [0,1].
@@ -19,8 +19,10 @@ im = imread('einsteinpic.jpg') / 255.
 im = imresize(im, (256, 256))
 
 # Generate noise
-imns = imnoise(im, 'salt & pepper', 0.05) * 1.             # "salt and pepper" noise
-imng = im + 0.05*np.random.randn(im.shape[0],im.shape[1])  # zero-mean Gaussian noise
+imns = imnoise(im, 'salt & pepper', 0.05) * \
+    1.             # "salt and pepper" noise
+# zero-mean Gaussian noise
+imng = im + 0.05*np.random.randn(im.shape[0], im.shape[1])
 
 
 # Apply a Gaussian filter with a standard deviation of 2.5
@@ -35,10 +37,16 @@ gflt_imng2D = conv2(imng, g, mode='reflect')
 # Store the results to gflt_imns and gflt_imng, use conv1 instead of conv2 used above.
 # The result should not change from gflt_imns2D and gflt_imng2D.
 # See Szeliski's Book chapter 3.2.1 Separable filtering, numpy.linalg.svd and scipy.ndimage.filters convolve1d
+# Decompose 2D Gaussian kernel into 1D components using SVD
+U, S, Vt = np.linalg.svd(g)
+# Extract the 1D kernel from the first singular value and vector
+kernel_1d = np.sqrt(S[0]) * U[:, 0]
 
-##--your-code-starts-here--##
-
-##--your-code-ends-here--##
+# Apply separable filtering: convolve along vertical axis (0), then horizontal axis (1)
+gflt_imns = conv1(conv1(imns, kernel_1d, axis=0, mode='reflect'),
+                  kernel_1d, axis=1, mode='reflect')
+gflt_imng = conv1(conv1(imng, kernel_1d, axis=0, mode='reflect'),
+                  kernel_1d, axis=1, mode='reflect')
 
 
 # Median filtering is done by extracting a local patch from the input image
@@ -59,20 +67,17 @@ def median_filter(img, wsize):
             # Use the region limits to extract a patch from the image,
             # calculate the median value (e.g using numpy) from the extracted
             # local region and store it to output using correct indexing.
-
-            ##--your-code-starts-here--##
-
-            ##--your-code-ends-here--##
+            patch = img[iMin:iMax+1, jMin:jMax+1]
+            output[i, j] = np.median(patch)
 
     return output
+
 
 # Apply median filtering, use neighborhood size 5x5
 # Store the results in medflt_imns and medflt_imng
 # Use the median_filter function above
-
-##--your-code-starts-here--##
-
-##--your-code-ends-here--##
+medflt_imns = median_filter(imns, 5)
+medflt_imng = median_filter(imng, 5)
 
 
 # Apply bilateral filter to each image with window size 11.
@@ -87,7 +92,7 @@ bflt_imns = bilateral_filter(imns, wsize, sigma_d, sigma_r)
 bflt_imng = bilateral_filter(imng, wsize, sigma_d, sigma_r)
 
 # Display filtering results
-fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16,8))
+fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16, 8))
 ax = axes.ravel()
 ax[0].imshow(imns, cmap='gray')
 ax[0].set_title("Noisy input image")
@@ -103,4 +108,3 @@ ax[6].imshow(medflt_imng, cmap='gray')
 ax[7].imshow(bflt_imng, cmap='gray')
 plt.suptitle("Filtering results", fontsize=20)
 plt.show()
-

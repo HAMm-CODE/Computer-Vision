@@ -161,7 +161,7 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 
 %The training becomes unstable; the loss diverges, and the network fails to converge to good filters.
 %Without momentum, updates follow only the current gradient. Training is slower and can oscillate in steep directions
-
+%Momentum accelerates convergence, smooths the trajectory of updates, and helps escape shallow local minima, leading to faster and more stable training.
 
 % Load an image
 im = rgb2gray(im2single(imread('data/dots.jpg'))) ;

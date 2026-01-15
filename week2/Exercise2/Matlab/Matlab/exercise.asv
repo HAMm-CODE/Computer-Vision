@@ -46,7 +46,12 @@ figure(2) ; clf ; vl_imarraysc(y) ; colormap gray ;
 % Your task: Is there any difference between each run? Why?
 %            What is the size of the output y, and how is this related to
 %            x and w?
-% randn generates random values drawn from a normal (Gaussian) distribution.
+% Yes, the output differs between runs because the convolution filters are randomly initialized using randn.%
+%380   508    10%
+%To calculate the size of y we use h=H−5+1 w=W−5+1 where the spatial dimensions are reduced due to valid convolution with a 
+%5×5 filter and the third dimension corresponds to the number of filters.
+%x dictates the size of the input image and w dictates the third dimension
+%corresponds to the number of filters.and filter used
 
 %% Applying downsampling and padding
 % Try again, downsampling the output
@@ -58,14 +63,16 @@ y_pad = vl_nnconv(x, w, [], 'pad', 2);
 figure(4); clf; vl_imarraysc(y_pad); colormap gray; title('Padding');
 
 % Your task: How does the size of y_pad differ from previous y? Can you explain why?
+%Compared to the unpadded output y, y_pad has larger spatial dimensions. With padding = 2 and a 
+%5×5 filter, the output size becomes 𝐻×𝑊×10, matching the input height and width.
 
 
 %% Manually design a filter
  
 %%% Your code starts here %%%
-w2 = [0  0  0;
-      0  1  0;
-      0  0  0];
+w2 = [0  -1  0;
+      -1  4  -1;
+      0  -1  0];
 %%% Your code stops here %%%
 
 w2 = repmat(w2, [1, 1, 3]);
@@ -84,7 +91,9 @@ subplot(1,3,3) ; imagesc(-abs(y_lap)) ; title('- abs(filter output)');
 %            Why is the repmat function needed here?
 %            Take a look at the result. 
 %            What kind of a features does our filter extract?
-      
+
+% Without repmat, the filter would not match the input depth, and the convolution would fail
+% The filter extracts high-frequency features such as edges and contours in all directions.     
 
 %% Non-linear gating (ReLU)
 
@@ -103,6 +112,8 @@ subplot(1,2,1); vl_imarraysc(y); title('Filter output');
 subplot(1,2,2); vl_imarraysc(z); title('ReLU output');
 
 % Your task: Some of the functions in a CNN should be non-linear. Why?
+% The network would reduce to a single linear transformation regardless of depth. 
+% Non-linearities allow CNNs to model complex patterns, learn hierarchical features, and solve problems that are not linearly separable.
 
 %% Pooling
 y = vl_nnpool(x, 15, 'Stride', 4) ;  % max pooling with a square filter of size 15
@@ -113,7 +124,8 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 % Your task: Compare the result of max-pooling to the original.
 %            What is the effect of max-pooling? 
 %            What does the 'Stride' parameter do?
-
+%Max-pooling reduces the spatial resolution of feature maps while preserving strong activations,
+%The stride parameter controls the step size of the pooling window and therefore determines the amount of downsampling.
 
 %% Implementing a small CNN and optimizing with SGD
 %  We will train a CNN to extract blob-like structures from an image.
@@ -126,6 +138,10 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 %    How would the histograms set in an ideal case?
 %    What is the result here compared to the ideal case?
 
+%In an ideal case, the histograms of blob and non-blob scores would be clearly separated, 
+%with minimal overlap and few values between the classification thresholds. 
+%In the current result without pre-processing, the distributions overlap significantly, 
+%leading to ambiguous scores and reduced detection performance.
 
 % 2. Train the tiny CNN by first smoothing the input image and subtracting 
 %    the median value in preprocessing. Use the imsmooth function 
@@ -133,6 +149,9 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 %    The learned filter should resemble the discretisation of a well-known differential operator. 
 %    Which one? 
 
+%The learned filter resembles the Laplacian of Gaussian (LoG) operator. 
+% Since the input is first smoothed using a Gaussian with σ = 3, 
+% the CNN learns a Laplacian-like filter
 
 % 3. Try doubling the learning rate.
 %    What is the effect of having too high of a learning rate?
@@ -140,6 +159,8 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 %    How does this differ from the previous with the same learning rate?
 %    What is the benefit of using momentum?
 
+%The training becomes unstable; the loss diverge, and the network may fail to converge to good filters.
+%
 
 
 % Load an image
@@ -153,6 +174,9 @@ fig = figure('Name','test', 'Position', [0,0,1000,600]);
 
 % Pre-processing
 %%% Your code starts here %%%
+x_smooth = imsmooth(x, 3); 
+x_pre = x_smooth;
+x_preprocessed = single(x_pre) - median(x_pre(:));
 
 %%% Your code ends here %%%
 
@@ -167,7 +191,7 @@ fig = figure('Name','test', 'Position', [0,0,1000,600]);
 % - plotPeriod: how often to plot
 
 numIterations = 500 ;
-rate = 5 ;
+rate = 10 ;
 momentum = 0.9 ;
 shrinkRate = 0.0001 ;
 plotPeriod = 10 ;

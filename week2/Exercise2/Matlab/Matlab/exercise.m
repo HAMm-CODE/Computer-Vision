@@ -149,6 +149,9 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 %    The learned filter should resemble the discretisation of a well-known differential operator. 
 %    Which one? 
 
+%The learned filter resembles the Laplacian of Gaussian (LoG) operator. 
+% Since the input is first smoothed using a Gaussian with σ = 3, 
+% the CNN learns a Laplacian-like filter
 
 % 3. Try doubling the learning rate.
 %    What is the effect of having too high of a learning rate?
@@ -156,6 +159,8 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 %    How does this differ from the previous with the same learning rate?
 %    What is the benefit of using momentum?
 
+%The training becomes unstable; the loss diverges, and the network fails to converge to good filters.
+%
 
 
 % Load an image
@@ -169,10 +174,9 @@ fig = figure('Name','test', 'Position', [0,0,1000,600]);
 
 % Pre-processing
 %%% Your code starts here %%%
-% Convert RGB image to grayscale
-x_gray = rgb2gray(x);
-% Apply Gaussian smoothing
-x_prep = imgaussfilt(x_gray, 2);
+x_smooth = imsmooth(x, 3); 
+x_pre = x_smooth;
+x_preprocessed = single(x_pre) - median(x_pre(:));
 
 %%% Your code ends here %%%
 

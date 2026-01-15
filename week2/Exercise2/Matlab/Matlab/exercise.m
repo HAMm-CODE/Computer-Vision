@@ -160,7 +160,7 @@ subplot(1,2,2); imagesc(y); title('Max-pooling');
 %    What is the benefit of using momentum?
 
 %The training becomes unstable; the loss diverges, and the network fails to converge to good filters.
-%
+%Without momentum, updates follow only the current gradient. Training is slower and can oscillate in steep directions
 
 
 % Load an image

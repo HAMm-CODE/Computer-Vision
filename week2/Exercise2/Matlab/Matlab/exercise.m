@@ -192,7 +192,7 @@ x_preprocessed = single(x_pre) - median(x_pre(:));
 
 numIterations = 500 ;
 rate = 5 ;
-momentum = 0.9 ;
+momentum = 0 ;
 shrinkRate = 0.0001 ;
 plotPeriod = 10 ;
 

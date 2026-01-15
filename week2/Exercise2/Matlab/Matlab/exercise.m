@@ -174,9 +174,13 @@ fig = figure('Name','test', 'Position', [0,0,1000,600]);
 
 % Pre-processing
 %%% Your code starts here %%%
-x_smooth = imsmooth(x, 3); 
-x_pre = x_smooth;
-x_preprocessed = single(x_pre) - median(x_pre(:));
+x_smooth = zeros(size(x), 'like', x);
+
+for i = 1:size(x, 3)
+    x_smooth(:,:,i) = imsmooth(x(:,:,i), 3);
+end
+
+x_preprocessed = single(x_smooth) - median(x_smooth(:));
 
 %%% Your code ends here %%%
 
@@ -192,7 +196,7 @@ x_preprocessed = single(x_pre) - median(x_pre(:));
 
 numIterations = 500 ;
 rate = 5 ;
-momentum = 0 ;
+momentum = 0.9 ;
 shrinkRate = 0.0001 ;
 plotPeriod = 10 ;
 

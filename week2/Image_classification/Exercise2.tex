@@ -1,0 +1,209 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[12pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+
+\usepackage[T1]{fontenc}
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+\usepackage{color}
+\usepackage{graphicx}
+%\usepackage{subfigure}
+%\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{booktabs,array}
+\usepackage{etoolbox}
+\usepackage{import}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{fullpage}
+\usepackage{url}
+
+\newenvironment{exercise}[2][Task]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\newenvironment{demo}[2][Demo]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+
+\newcommand{\cv}{\mathbf{c}}
+\newcommand{\xv}{\mathbf{x}}
+\newcommand{\yv}{\mathbf{y}}
+\newcommand{\zv}{\mathbf{z}}
+\newcommand{\wv}{\mathbf{w}}
+\newcommand{\logit}{\sigma}
+\newcommand{\softmax}{s}
+
+\newcommand{\tv}{\mathbf{t}}
+\newcommand{\pv}{\mathbf{p}}
+\newcommand{\Km}{\mathbf{K}}
+\newcommand{\Tm}{\mathbf{T}}
+\newcommand{\Rm}{\mathbf{R}}
+\newcommand{\Mm}{\mathbf{M}}
+\newcommand{\IIm}{\mathbf{I}}
+\newcommand{\Wm}{\mathbf{W}}
+\newcommand{\Pm}{\mathbf{P}}
+\newcommand{\zerov}{\mathbf{0}}
+\DeclareMathOperator{\atan2}{atan2}
+\DeclareMathOperator{\trace}{trace}
+
+%\newcommand{\redtext}[1]{\textcolor{red}{{#1}}}
+%\renewcommand{\thesection}{}% Remove section references...
+%\renewcommand{\thesubsection}{\arabic{subsection}}%... from subsections
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+\title{DATA.ML.300 Computer Vision\\ Exercise Round 2}
+\date{\vspace{-5mm} January 2025}
+%\author{The Author}
+\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+%\section{First section}
+
+%Your text goes here.
+\noindent For these exercises you will need MATLAB, which should be available on university computers. Submit all your answers and output figures in a PDF file. For pen \& paper tasks, the submitted PDF file should include a
+screenshot of your handwritten solutions, or text converted from Word or LaTeX format.
+In addition, submit runnable .m files, where you have filled in your codes to the
+given template files. Do not copy all the code from these runnable files into the PDF.
+\newline
+
+\noindent All submissions should be uploaded to Moodle. Exercise points will be granted after a
+teaching assistant has reviewed your answers. Submissions made before the deadline can
+earn up to 4 points. After the deadline, no partial points will be awarded; only submissions with fully correct solutions to all tasks will receive 1 point.
+
+%\vspace{2.5mm}
+%\noindent Get the example \texttt{m}-files by downloading \texttt{Exercise10.zip} from the MyCourses page. 
+
+
+\begin{exercise}{1}
+	Neural networks and backpropagation. (Pen \& paper problem) (1 points)
+	
+	\noindent	
+	In Figure 1 below you see a very small neural network, which has one input
+	unit, one hidden unit (logistic), and one output unit (linear). The nonlinear
+	function in the logistic unit is defined by the formula $\sigma(x)=\frac{1}{1+exp(-x)}$.
+	Let’s consider one training case. For that training case, the input value is 1
+	(as shown in the figure) and the target output value t is 1. We are using the
+	standard squared loss function: $E=\frac{1}{2}(t-y)^2$, where y is the output of the
+	network. 
+	\newline
+	
+	\noindent \textit{a)}
+	What is the output of the hidden unit and the output unit, for this training
+	case?
+	
+	\noindent \textit{b)}
+	What is the loss, for this training case?
+	
+	\noindent \textit{c)}
+	What is the derivative of the loss with respect to $w_2$, for this training
+	case? \textit{Hint: Use chain rule}
+	
+	\noindent \textit{d)}
+	What is the derivative of the loss with respect to $w_1$, for this training
+	case? \textit{Hint: the derivative of logistic function is defined as $\frac{d}{dx} \sigma(x)= \sigma(x) \cdot (1- \sigma(x))$}
+		
+	\begin{figure}
+		\begin{center}
+		\includegraphics[scale=0.2]{network.png}
+		\caption{A small neural network with one hidden unit. The values for the weights and
+			biases are given in the figure}
+		\end{center}
+	\end{figure}
+	\end{exercise}
+
+\newpage
+\begin{exercise}{2} Matching images based on similarity (Pen \& paper problem) (1 point)
+
+\vspace{1mm}
+\noindent We have three feature vectors which are defined as 
+\begin{gather*}
+    \mathbf{Q} = \begin{bmatrix}
+    2 & 1 & 6 & 4 & 2
+    \end{bmatrix}^T, \\
+    \mathbf{A} = \begin{bmatrix}
+    1 & 2 & 3 & 4 & 1
+    \end{bmatrix}^T, \\
+    \mathbf{B} = \begin{bmatrix}
+    3 & 1 & 4 & 1 & 5
+    \end{bmatrix}^T,
+\end{gather*}
+
+\noindent where $\mathbf{Q}$ is a feature vector extracted from a query image Q, and $\mathbf{A}$ and $\mathbf{B}$ are feature vectors extracted from random images A and B in a dataset.
+\newline
+
+\noindent \textit{a)}
+	Calculate the Euclidean distance and cosine similarity between $\mathbf{Q}$ and $\mathbf{A}$ and between $\mathbf{Q}$ and $\mathbf{B}$.
+	
+
+\noindent \textit{b)}
+Based on the feature vectors and similarity metrics calculated in a), which image from the dataset is more similar to query image Q? Why?
+
+\end{exercise}
+
+\begin{exercise}{3} Observing different parts of a simple CNN. (Programming exercise) (2 points)
+
+\vspace{1mm}
+\noindent Download the material and open the exercise.m file. Each section observes different building blocks of a convolutional neural network. Your task is to progress one section at a time, fill any missing code and answer questions asked in each section. \textbf{Questions can be answered in the code by inserting comments below the questions; however, if you prefer PDF, include the questions also.}
+
+\end{exercise}
+
+
+
+
+
+%\vspace{2.5mm}
+%\noindent Tasks continue on the next page...
+%\newpage
+%\
+
+\end{document}
